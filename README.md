@@ -31,6 +31,6 @@ Note that this is a minimalist script designed to install libraries
 and binaries without root access, the following are supported:
 
 * Binaries (using `PATH`)
-* Includes (using `CPATH)
+* Includes (using `CPATH`)
 * Libraries (using `LIBRARY_PATH` and `LD_LIBRARY_PATH`)
 
