@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Go to this directory
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $DIR
+
+if [ $# -le 2 ]; then
+    echo "Usage: "
+    echo "  notroot [search|install] package"
+    echo ""
+    echo "  search package:"
+    echo "		Display the search result for a package"
+    echo ""
+    echo "  install packages:"
+    echo "		Installs a given package"
+    echo ""
+    echo "Note: don't forget to source notroot/bashrc"
+    exit 1
+fi
+
+case $1 in
+    search)
+        apt-cache search $2
+        ;;
+    install)
+        shift
+        for package in $*; do
+            echo "Installing $package ..."
+            rm -rf deb
+            mkdir deb &&
+            cd deb &&
+            apt-get download $package &&
+            cd .. &&
+            dpkg -x deb/*.deb . 
+        done
+        ;;
+    *)
+        echo "Unknown instruction $1"
+        ;;
+esac
