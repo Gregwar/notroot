@@ -24,3 +24,13 @@ Simply run something like this:
     notroot install libjsoncpp-dev libjsoncpp0
 
 This will download and extract packages.
+
+## Support 
+
+Note that this is a minimalist script designed to install libraries 
+and binaries without root access, the following are supported:
+
+* Binaries (using `PATH`)
+* Includes (using `CPATH)
+* Libraries (using `LIBRARY_PATH` and `LD_LIBRARY_PATH`)
+
