@@ -57,7 +57,7 @@ case $1 in
                 cd rpm &&
                 yumdownloader $package &&
                 cd .. &&
-                rpm2cpio rpm/*.rpm | cpio -idmv
+                rpm2cpio rpm/*.rpm | cpio -idmvu
             fi
         done
         ;;
