@@ -22,6 +22,18 @@ case $1 in
     search)
         apt-cache search $2
         ;;
+    install-yum)
+        shift
+        for package in $*; do
+            echo "Installing $package ..."
+            rm -rf rpm
+            mkdir rpm &&
+            cd rpm &&
+            yumdownloader $package &&
+            cd .. &&
+            rpm2cpio rpm/*.rpm | cpio -idmv
+        done
+        ;;
     install)
         shift
         for package in $*; do
