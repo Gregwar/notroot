@@ -3,6 +3,18 @@
 # Go to this directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
+which apt-get 2> /dev/null >&2
+if [ $? -eq 0 ]; then
+    MODE="apt"
+else
+    which yum 2> /dev/null >&2
+    if [ $? -eq 0 ]; then
+        MODE="yum"
+    else
+        echo "I can't found apt or yum"
+        exit 1
+    fi
+fi
 
 if [ $# -lt 2 ]; then
     echo "Usage: "
@@ -20,36 +32,36 @@ fi
 
 case $1 in
     search)
-        apt-cache search $2
-        ;;
-    search-yum)
-        yum search $2
+        if [ "$MODE" = "apt" ]; then
+            apt-cache search $2
+        fi
+        if [ "$MODE" = "yum" ]; then
+            yum search $2
+        fi
         ;;
     install)
         shift
         for package in $*; do
-            echo "Installing $package ..."
-            rm -rf deb
-            mkdir deb &&
-            cd deb &&
-            apt-get download $package &&
-            cd .. &&
-            dpkg -x deb/*.deb . 
+        echo "Installing $package from $MODE..."
+            if [ "$MODE" = "apt" ]; then
+                rm -rf deb
+                mkdir deb &&
+                cd deb &&
+                apt-get download $package &&
+                cd .. &&
+                dpkg -x deb/*.deb . 
+            fi
+            if [ "$MODE" = "yum" ]; then
+                rm -rf rpm
+                mkdir rpm &&
+                cd rpm &&
+                yumdownloader $package &&
+                cd .. &&
+                rpm2cpio rpm/*.rpm | cpio -idmv
+            fi
         done
         ;;
     *)
         echo "Unknown instruction $1"
-        ;;
-    install-yum)
-        shift
-        for package in $*; do
-            echo "Installing $package ..."
-            rm -rf rpm
-            mkdir rpm &&
-            cd rpm &&
-            yumdownloader $package &&
-            cd .. &&
-            rpm2cpio rpm/*.rpm | cpio -idmv
-        done
         ;;
 esac
