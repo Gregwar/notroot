@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]-$0}" )" && pwd )"
 for ROOT in $DIR $DIR/deb
 do
 export PATH="$DIR:$DIR/bin:$DIR/sbin:$ROOT/usr/bin:$ROOT/usr/sbin:$PATH"
