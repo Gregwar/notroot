@@ -2,6 +2,7 @@
 
 # Go to this directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MARKER='\033[1m[NOTROOT]\033[0m'
 cd $DIR
 which apt-get 2> /dev/null >&2
 if [ $? -eq 0 ]; then
@@ -11,7 +12,7 @@ else
     if [ $? -eq 0 ]; then
         MODE="yum"
     else
-        echo "I can't found apt or yum"
+        echo -e "$MARKER I can't found apt or yum"
         exit 1
     fi
 fi
@@ -42,14 +43,34 @@ case $1 in
     install)
         shift
         for package in $*; do
-        echo "Installing $package from $MODE..."
+        echo -e "$MARKER Installing $package from $MODE..."
             if [ "$MODE" = "apt" ]; then
                 rm -rf deb
                 mkdir deb &&
                 cd deb &&
-                apt-get download $package &&
+                which apt-rdepends > /dev/null
+                if [ $? -eq 0 ]; then
+                    echo -e "$MARKER Scanning dependencies with apt-rdepends..."
+                    for dep in `apt-rdepends $package|grep -v "^ "`; do
+                        dpkg -l $dep > /dev/null 2>&1
+                        if [ $? -eq 1 ]; then
+                            echo -e "$MARKER $dep is not present on the system, installing it locally"
+                            apt-get download $dep
+                        fi
+                    done
+                else
+                    echo -e "$MARKER WARNING:"
+                    echo "apt-rdepends is not installed, if you want recursive"
+                    echo "         installation run the following command:"
+                    echo ""
+                    echo "notroot install apt-rdepends"
+                    echo ""
+                    apt-get download $package 
+                fi
                 cd .. &&
-                dpkg -x deb/*.deb . 
+                for deb in deb/*.deb; do
+                    dpkg -x $deb . 
+                done
             fi
             if [ "$MODE" = "yum" ]; then
                 rm -rf rpm
@@ -62,6 +83,6 @@ case $1 in
         done
         ;;
     *)
-        echo "Unknown instruction $1"
+        echo -e "$MARKER Unknown instruction $1"
         ;;
 esac
