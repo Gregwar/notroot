@@ -65,8 +65,8 @@ case $1 in
                     echo ""
                     echo "notroot install apt-rdepends"
                     echo ""
-                    apt-get download $package 
                 fi
+                apt-get download $package
                 cd .. &&
                 for deb in deb/*.deb; do
                     dpkg -x $deb . 
