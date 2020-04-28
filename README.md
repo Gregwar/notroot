@@ -1,5 +1,7 @@
 # Not root, install APT packages without root access
 
+![Notroot](notroot.png)
+
 This simple tool allow you to install apt packages without root
 access.
 
